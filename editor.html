@@ -267,4 +267,96 @@
                     keyInput.value = node.key;
                     keyInput.addEventListener('change', () => {
                         node.key = keyInput.value;
-                        this.outputArea.value = `
+                        this.outputArea.value = `do local ret=${this.root.toLuaString()} return ret end`;
+                    });
+
+                    const addBtn = document.createElement('button');
+                    addBtn.className = 'add-btn';
+                    addBtn.textContent = '+';
+                    addBtn.addEventListener('click', () => {
+                        const newKey = prompt('输入新键名:');
+                        if (newKey) {
+                            const newNode = new TreeNode(newKey, null, node);
+                            node.addChild(newNode);
+                            this.render();
+                            this.outputArea.value = `do local ret=${this.root.toLuaString()} return ret end`;
+                        }
+                    });
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.textContent = '-';
+                    deleteBtn.addEventListener('click', () => {
+                        if (node.parent) {
+                            node.parent.removeChild(node);
+                            this.render();
+                            this.outputArea.value = `do local ret=${this.root.toLuaString()} return ret end`;
+                        }
+                    });
+
+                    keyValue.appendChild(keyInput);
+                    keyValue.appendChild(addBtn);
+                    keyValue.appendChild(deleteBtn);
+                    div.appendChild(keyValue);
+
+                    node.children.forEach(child => {
+                        this.renderNode(child);
+                        div.appendChild(child.element);
+                    });
+                } else {
+                    const keyValue = document.createElement('div');
+                    keyValue.className = 'key-value';
+                    
+                    const keyInput = document.createElement('input');
+                    keyInput.className = 'key-input';
+                    keyInput.value = node.key;
+                    keyInput.addEventListener('change', () => {
+                        node.key = keyInput.value;
+                        this.outputArea.value = `do local ret=${this.root.toLuaString()} return ret end`;
+                    });
+
+                    const valueInput = document.createElement('input');
+                    valueInput.className = 'value-input';
+                    valueInput.value = node.value;
+                    valueInput.addEventListener('change', () => {
+                        node.value = this.parseValue(valueInput.value);
+                        this.outputArea.value = `do local ret=${this.root.toLuaString()} return ret end`;
+                    });
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.textContent = '-';
+                    deleteBtn.addEventListener('click', () => {
+                        if (node.parent) {
+                            node.parent.removeChild(node);
+                            this.render();
+                            this.outputArea.value = `do local ret=${this.root.toLuaString()} return ret end`;
+                        }
+                    });
+
+                    keyValue.appendChild(keyInput);
+                    keyValue.appendChild(valueInput);
+                    keyValue.appendChild(deleteBtn);
+                    div.appendChild(keyValue);
+                }
+
+                this.container.appendChild(div);
+            }
+
+            exportData() {
+                const data = this.outputArea.value;
+                const blob = new Blob([data], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'data.lua';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // 初始化编辑器
+        const editor = new TreeEditor();
+    </script>
+</body>
+</html>
